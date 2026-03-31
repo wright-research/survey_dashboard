@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Dashboard</title>
+    <link rel="icon" type="image/png" href="Assets/steel-fab1.png">
+
+    <!-- Shoelace UI CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/themes/light.css" />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+
+
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Company ABC Survey Results</h1>
+        <h2>2026</h2>
+
+        <!-- Filter Status Display -->
+        <div id="filter-status" class="filter-status hidden">
+            <p id="filter-status-text" class="filter-status-text"></p>
+            <button id="reset-filters-btn" class="reset-filters-btn" onclick="window.FiltersModule.resetFilters()">Reset Filters</button>
+        </div>
+
+        <!-- Survey Filters Button -->
+        <sl-button variant="primary" size="medium" id="survey-filters-btn">
+            <span class="btn-text">Survey Filters</span>
+            <span class="btn-icon">⌄</span>
+        </sl-button>
+
+        <!-- KPI Cards Container -->
+        <div id="kpi-container" class="kpi-container">
+            <!-- Populated dynamically -->
+        </div>
+
+        <!-- Tables Wrapper -->
+        <div class="tables-wrapper">
+
+            <!-- Grouped Averages Table -->
+            <div class="grouped-averages-container">
+                <div class="grouped-averages-header">
+                    <h2>Survey Component Averages</h2>
+                    <p class="grouped-averages-subtitle" id="grouped-averages-subtitle">
+                        Conditional formatting of filtered results relative to company baseline.
+                    </p>
+                </div>
+                <div class="grouped-averages-table-wrapper">
+                    <table class="grouped-averages-table" id="grouped-averages-table">
+                        <thead id="grouped-averages-thead">
+                            <tr>
+                                <th class="group-header">Category</th>
+                                <th class="group-header">All Responses</th>
+                            </tr>
+                        </thead>
+                        <tbody id="grouped-averages-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Individual Question Averages Table -->
+            <div class="individual-questions-container">
+                <div class="individual-questions-header">
+                    <h2>THRIVE Question Averages</h2>
+                    <p class="individual-questions-subtitle" id="individual-questions-subtitle">
+                        Average scores for each of the 12 THRIVE survey questions.
+                    </p>
+                </div>
+                <div class="individual-questions-table-wrapper">
+                    <table class="individual-questions-table" id="individual-questions-table">
+                        <thead id="individual-questions-thead">
+                            <tr>
+                                <th class="question-header">Category</th>
+                                <th class="question-header">Question</th>
+                                <th class="question-header">All Responses</th>
+                            </tr>
+                        </thead>
+                        <tbody id="individual-questions-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div><!-- end tables-wrapper -->
+
+        <!-- Charts Section -->
+        <div class="charts-container" id="charts-container">
+
+            <!-- Q40: Company Values — click any bar to drill into Q41 "why" responses -->
+            <div class="chart-item">
+                <h3 class="chart-title">Which company value is most important to you?</h3>
+                <p class="chart-subtitle">Click any bar to see why respondents chose that value.</p>
+                <div class="chart-wrapper" id="wrapper-chart-values">
+                    <canvas id="chart-values" class="chart-canvas"></canvas>
+                </div>
+                <button class="chart-toggle-btn" id="toggle-chart-values" style="display:none;">
+                    Show all categories
+                </button>
+            </div>
+
+            <!-- ── Open-ended questions ──────────────────────────────────── -->
+            <div class="chart-item">
+                <h3 class="chart-title">What do you enjoy most about your job at this company?</h3>
+                <div class="chart-wrapper" id="wrapper-chart-enjoy-most">
+                    <canvas id="chart-enjoy-most" class="chart-canvas"></canvas>
+                </div>
+                <button class="chart-toggle-btn" id="toggle-chart-enjoy-most" style="display:none;">Show all categories</button>
+            </div>
+
+            <div class="chart-item">
+                <h3 class="chart-title">What do you enjoy least about your job at this company?</h3>
+                <div class="chart-wrapper" id="wrapper-chart-enjoy-least">
+                    <canvas id="chart-enjoy-least" class="chart-canvas"></canvas>
+                </div>
+                <button class="chart-toggle-btn" id="toggle-chart-enjoy-least" style="display:none;">Show all categories</button>
+            </div>
+
+            <div class="chart-item">
+                <h3 class="chart-title">During your first year working here, what obstacles did you face?</h3>
+                <div class="chart-wrapper" id="wrapper-chart-obstacles">
+                    <canvas id="chart-obstacles" class="chart-canvas"></canvas>
+                </div>
+                <button class="chart-toggle-btn" id="toggle-chart-obstacles" style="display:none;">Show all categories</button>
+            </div>
+
+            <div class="chart-item">
+                <h3 class="chart-title">What would motivate you to want to be a leader at work?</h3>
+                <div class="chart-wrapper" id="wrapper-chart-leader">
+                    <canvas id="chart-leader" class="chart-canvas"></canvas>
+                </div>
+                <button class="chart-toggle-btn" id="toggle-chart-leader" style="display:none;">Show all categories</button>
+            </div>
+
+            <div class="chart-item">
+                <h3 class="chart-title">What one thing would you need to make a career at this company?</h3>
+                <div class="chart-wrapper" id="wrapper-chart-career">
+                    <canvas id="chart-career" class="chart-canvas"></canvas>
+                </div>
+                <button class="chart-toggle-btn" id="toggle-chart-career" style="display:none;">Show all categories</button>
+            </div>
+
+            <!-- ── Green comment fields ──────────────────────────────────── -->
+            <div class="chart-item">
+                <h3 class="chart-title">What makes you feel overwhelmed at work?</h3>
+                <p class="chart-subtitle">Follow-up to: "I often feel overwhelmed at work."</p>
+                <div class="chart-wrapper" id="wrapper-chart-overwhelmed">
+                    <canvas id="chart-overwhelmed" class="chart-canvas"></canvas>
+                </div>
+                <button class="chart-toggle-btn" id="toggle-chart-overwhelmed" style="display:none;">Show all categories</button>
+            </div>
+
+            <div class="chart-item">
+                <h3 class="chart-title">How do you feel about the recognition you receive at work?</h3>
+                <p class="chart-subtitle">Follow-up to: "I regularly receive recognition or praise for doing good work."</p>
+                <div class="chart-wrapper" id="wrapper-chart-recognition">
+                    <canvas id="chart-recognition" class="chart-canvas"></canvas>
+                </div>
+                <button class="chart-toggle-btn" id="toggle-chart-recognition" style="display:none;">Show all categories</button>
+            </div>
+
+            <div class="chart-item">
+                <h3 class="chart-title">Why are you satisfied or not with the company's compensation and wages?</h3>
+                <p class="chart-subtitle">Follow-up to: "I am satisfied with the company's compensation and wages."</p>
+                <div class="chart-wrapper" id="wrapper-chart-compensation">
+                    <canvas id="chart-compensation" class="chart-canvas"></canvas>
+                </div>
+                <button class="chart-toggle-btn" id="toggle-chart-compensation" style="display:none;">Show all categories</button>
+            </div>
+
+            <div class="chart-item">
+                <h3 class="chart-title">(Optional) What one or two things would you change about your work experience at this company?</h3>
+                <div class="chart-wrapper" id="wrapper-chart-would-change">
+                    <canvas id="chart-would-change" class="chart-canvas"></canvas>
+                </div>
+                <button class="chart-toggle-btn" id="toggle-chart-would-change" style="display:none;">Show all categories</button>
+            </div>
+
+        </div>
+
+        <!-- Shoelace Drawer -->
+        <sl-drawer label="" id="survey-drawer" placement="top">
+            <div class="drawer-content">
+
+                <!-- Comparison Mode Selection -->
+                <div class="comparison-mode-container">
+                    <div class="comparison-mode-header">
+                        <h3>Comparison Mode</h3>
+                    </div>
+                    <div class="comparison-mode-content">
+                        <sl-radio-group name="comparison-mode" value="baseline" id="comparison-mode-radio-group">
+                            <sl-radio-button value="baseline">Baseline</sl-radio-button>
+                            <sl-radio-button value="roles">Roles</sl-radio-button>
+                            <sl-radio-button value="location">Location</sl-radio-button>
+                            <sl-radio-button value="tenure">Tenure</sl-radio-button>
+                        </sl-radio-group>
+                    </div>
+                    <div class="comparison-mode-explanation">
+                        <p class="comparison-mode-explanation-text" id="comparison-mode-explanation-text">
+                            Compare company-wide results to a smaller section filtered by role, location, or tenure.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Baseline Mode Filters -->
+                <div class="baseline-filters-container" id="baseline-filters-container">
+                    <div class="filters-container">
+
+                        <!-- Filter by Role -->
+                        <div class="filter-group">
+                            <div class="filter-group-header">Role</div>
+                            <div class="filter-group-content">
+                                <sl-radio-group name="role-filter" value="all" id="role-radio-group">
+                                    <sl-radio-button value="all">Show All</sl-radio-button>
+                                    <sl-radio-button value="compare">Filter</sl-radio-button>
+                                </sl-radio-group>
+                                <p class="filter-label inactive" id="role-label">Select Role</p>
+                                <sl-select placeholder="Choose roles to filter" disabled multiple clearable
+                                    max-options-visible="3" id="role-select">
+                                    <!-- Populated dynamically -->
+                                </sl-select>
+                            </div>
+                        </div>
+
+                        <!-- Filter by Location -->
+                        <div class="filter-group">
+                            <div class="filter-group-header">Location</div>
+                            <div class="filter-group-content">
+                                <sl-radio-group name="location-filter" value="all" id="location-radio-group">
+                                    <sl-radio-button value="all">Show All</sl-radio-button>
+                                    <sl-radio-button value="compare">Filter</sl-radio-button>
+                                </sl-radio-group>
+                                <p class="filter-label inactive" id="location-label">Select Location</p>
+                                <sl-select placeholder="Choose locations to filter" disabled multiple clearable
+                                    max-options-visible="3" id="location-select">
+                                    <!-- Populated dynamically -->
+                                </sl-select>
+                            </div>
+                        </div>
+
+                        <!-- Filter by Tenure -->
+                        <div class="filter-group">
+                            <div class="filter-group-header">Tenure</div>
+                            <div class="filter-group-content">
+                                <sl-radio-group name="tenure-filter" value="all" id="tenure-radio-group">
+                                    <sl-radio-button value="all">Show All</sl-radio-button>
+                                    <sl-radio-button value="compare">Filter</sl-radio-button>
+                                </sl-radio-group>
+                                <p class="filter-label inactive" id="tenure-label">Select Tenure</p>
+                                <div id="tenure-checkboxes-section" class="tenure-checkboxes hidden">
+                                    <sl-checkbox class="tenure-checkbox" value="Less than 1 year">Less than 1 year</sl-checkbox>
+                                    <sl-checkbox class="tenure-checkbox" value="1-3 years">1–3 years</sl-checkbox>
+                                    <sl-checkbox class="tenure-checkbox" value="4-6 years">4–6 years</sl-checkbox>
+                                    <sl-checkbox class="tenure-checkbox" value="7+ years">7+ years</sl-checkbox>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Roles Comparison Mode -->
+                <div class="roles-mode-container hidden" id="roles-mode-container">
+                    <div class="comparison-select-content">
+                        <sl-select placeholder="Choose roles to compare" multiple clearable
+                            max-options-visible="3" id="roles-comparison-select">
+                            <sl-option value="crane-operator">Crane Operator</sl-option>
+                            <sl-option value="detail-coordinator">Detail Coordinator</sl-option>
+                            <sl-option value="fitter">Fitter</sl-option>
+                            <sl-option value="forklift-operator">Forklift Operator</sl-option>
+                            <sl-option value="leadperson-supervisor">Leadperson/Supervisor</sl-option>
+                            <sl-option value="machine-operator">Machine Operator</sl-option>
+                            <sl-option value="maintenance">Maintenance</sl-option>
+                            <sl-option value="painter">Painter</sl-option>
+                            <sl-option value="parts-puller">Parts Puller</sl-option>
+                            <sl-option value="programmer">Programmer</sl-option>
+                            <sl-option value="quality-control">Quality Control</sl-option>
+                            <sl-option value="welder">Welder</sl-option>
+                            <sl-option value="other">Other</sl-option>
+                        </sl-select>
+                    </div>
+                </div>
+
+                <!-- Location Comparison Mode -->
+                <div class="location-mode-container hidden" id="location-mode-container">
+                    <div class="comparison-select-content">
+                        <sl-select placeholder="Choose locations to compare" multiple clearable
+                            max-options-visible="3" id="locations-comparison-select">
+                            <sl-option value="atlanta">Atlanta</sl-option>
+                            <sl-option value="birmingham">Birmingham</sl-option>
+                            <sl-option value="charlotte">Charlotte</sl-option>
+                            <sl-option value="greenville">Greenville</sl-option>
+                        </sl-select>
+                    </div>
+                </div>
+
+                <!-- Tenure Comparison Mode -->
+                <div class="tenure-mode-container hidden" id="tenure-mode-container">
+                    <div class="comparison-select-content">
+                        <sl-select placeholder="Choose tenure brackets to compare" multiple clearable
+                            max-options-visible="4" id="tenure-comparison-select">
+                            <sl-option value="less-than-1">Less than 1 year</sl-option>
+                            <sl-option value="1-3-years">1–3 years</sl-option>
+                            <sl-option value="4-6-years">4–6 years</sl-option>
+                            <sl-option value="7-plus-years">7+ years</sl-option>
+                        </sl-select>
+                    </div>
+                </div>
+
+            </div>
+        </sl-drawer>
+    </div>
+
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <div class="footer-content">
+            <p class="footer-text">Powered by <strong>Wright Research & Analytics</strong></p>
+        </div>
+    </footer>
+
+    <!-- Shoelace UI JavaScript -->
+    <script type="module"
+        src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/shoelace-autoloader.js"></script>
+
+    <!-- Dashboard Modules -->
+    <script src="js/data.js"></script>
+    <script src="js/csv-loader.js"></script>
+    <script src="js/kpis.js"></script>
+    <script src="js/grouped-averages.js"></script>
+    <script src="js/individual-questions.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/drawer.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/scroll-effects.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>
